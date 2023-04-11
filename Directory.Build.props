@@ -1,0 +1,29 @@
+<Project>
+    <!-- General -->
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <LangVersion>latest</LangVersion>
+        <Nullable>enable</Nullable>
+        <Features>strict</Features>
+      <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <!-- Build -->
+    <PropertyGroup>
+        <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+        <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild> <!-- Enable linter -->
+    </PropertyGroup>
+
+    <!-- Packaging -->
+    <PropertyGroup>
+        <IsPackable>false</IsPackable>
+        <IsPublishable>false</IsPublishable>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <Authors>Karl O'Brien</Authors>
+        <PackageLicenseExpression>GPL-3.0-only</PackageLicenseExpression>
+        <Description>Collection of Distributed systems examples.</Description>
+        <PackageTags>dotnet</PackageTags>
+    </PropertyGroup>
+</Project>
