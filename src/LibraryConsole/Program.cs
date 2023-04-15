@@ -1,9 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using WriteAheadLog;
 
-Console.WriteLine("Hello, World!");
+Console.WriteLine("Starting the logger");
 
-WriteAheadLogger wle = new WriteAheadLogger("First");
+LogConfig lc = new LogConfig(@"C:\Temp\", "Info.Messages");
+
+WriteAheadLogger wle = new WriteAheadLogger(lc);
 KeyValueStore storev = new KeyValueStore(wle);
 
 storev.Set("Karl", "first");

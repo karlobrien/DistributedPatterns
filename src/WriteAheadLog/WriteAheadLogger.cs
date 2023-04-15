@@ -3,14 +3,20 @@ using System.Text.Json;
 
 namespace WriteAheadLog
 {
+    /// <summary>
+    /// Every value is written to a separate file
+    /// the key store can be rebuilt from replaying the files
+    /// </summary>
     public class WriteAheadLogger
     {
         private string _name;
+        private readonly LogConfig _config;
         private long _sequence;
 
-        public WriteAheadLogger(string name)
+        public WriteAheadLogger(LogConfig config)
         {
-            _name = name;
+            _name = config.Name;
+            _config = config;
             //load or set sequence
             _sequence = 1;
         }
@@ -18,17 +24,10 @@ namespace WriteAheadLog
         public void Write(string key, string value)
         {
             var fileName = $"{_name}.{_sequence}.log";
+            var entryFile = Path.Combine(_config.ConfigLocation, fileName);
             WriteAheadlogEntry wle = new WriteAheadlogEntry(Encoding.UTF8.GetBytes(key), Encoding.UTF8.GetBytes(value), _sequence);
-            StreamWrite(wle, fileName);
-
-            //var jsonString = JsonSerializer.Serialize(wle, new JsonSerializerOptions { WriteIndented = true });
-            //byte[] jsonUtf8Bytes = JsonSerializer.SerializeToUtf8Bytes(wle);
-            //using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.Write, 4096))
-            //{
-            //    var bytes = Encoding.UTF8.GetBytes(value);
-            //    stream.Write(bytes, 0, bytes.Length);
-            //}
-
+            StreamWrite(wle, entryFile);
+            
             _sequence++;
         }
 
@@ -40,4 +39,17 @@ namespace WriteAheadLog
             JsonSerializer.Serialize(utf8JsonWriter, obj, options);
         }
     }
+}
+
+public class LogConfig
+{
+    public string ConfigLocation { get; }
+    public string Name { get; }
+
+    public LogConfig(string path, string name)
+    {
+        ConfigLocation = path;
+        Name = name;
+    }
+
 }

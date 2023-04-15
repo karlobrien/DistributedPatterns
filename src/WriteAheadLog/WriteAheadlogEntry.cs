@@ -6,7 +6,6 @@
         public long Timestamp { get; }
         public long Index { get; }
         public byte[] Key { get; }
-        //type of entry
 
         public WriteAheadlogEntry(byte[] key, byte[] data, long index)
         {
