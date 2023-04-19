@@ -5,8 +5,21 @@ Console.WriteLine("Starting the logger");
 
 LogConfig lc = new LogConfig(@"C:\Temp\", "Info.Messages");
 
-WriteAheadLogger wle = new WriteAheadLogger(lc);
-KeyValueStore storev = new KeyValueStore(wle);
+BasicWaLogger basicWaLogger = new BasicWaLogger(lc);
+KeyValueStore kvs = new KeyValueStore(basicWaLogger);
 
-storev.Set("Karl", "first");
-storev.Set("tom", "first");
+kvs.Init();
+
+var result = kvs.Get("tom");
+
+Console.WriteLine(result);
+
+//WriteAheadLogger wle = new WriteAheadLogger(lc);
+//KeyValueStore storev = new KeyValueStore(wle);
+
+//storev.Set("Karl", "first");
+//storev.Set("tom", "first");
+
+//PriorityQueue<string, int> test = new PriorityQueue<string, int>();
+//Console.WriteLine($"{test.EnsureCapacity(0)}");
+//var result = test.EnsureCapacity(100);

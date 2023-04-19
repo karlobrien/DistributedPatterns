@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using System.Text.Json;
+using WriteAheadLog;
 
 namespace WriteAheadLog
 {
@@ -9,26 +10,19 @@ namespace WriteAheadLog
     /// </summary>
     public class WriteAheadLogger
     {
-        private string _name;
         private readonly LogConfig _config;
-        private long _sequence;
 
         public WriteAheadLogger(LogConfig config)
         {
-            _name = config.Name;
             _config = config;
-            //load or set sequence
-            _sequence = 1;
         }
 
-        public void Write(string key, string value)
+        public void Write(string key, string value, ulong sequence)
         {
-            var fileName = $"{_name}.{_sequence}.log";
+            var fileName = $"{_config.Name}.{sequence}.log";
             var entryFile = Path.Combine(_config.ConfigLocation, fileName);
-            WriteAheadlogEntry wle = new WriteAheadlogEntry(Encoding.UTF8.GetBytes(key), Encoding.UTF8.GetBytes(value), _sequence);
+            WriteAheadlogEntry wle = new WriteAheadlogEntry(Encoding.UTF8.GetBytes(key), Encoding.UTF8.GetBytes(value), sequence);
             StreamWrite(wle, entryFile);
-            
-            _sequence++;
         }
 
         public static void StreamWrite(WriteAheadlogEntry obj, string fileName)
@@ -38,6 +32,47 @@ namespace WriteAheadLog
             JsonSerializerOptions options = new JsonSerializerOptions();
             JsonSerializer.Serialize(utf8JsonWriter, obj, options);
         }
+    }
+}
+
+public class BasicWaLogger
+{
+    private readonly LogConfig _config;
+
+    public BasicWaLogger(LogConfig config)
+    {
+        _config = config;
+    }
+
+    public void Write(string key, string value, ulong sequence)
+    {
+        var fileName = $"{_config.Name}.{sequence}.log";
+        var entryFile = Path.Combine(_config.ConfigLocation, fileName);
+        WriteAheadlogEntry wle = new WriteAheadlogEntry(Encoding.UTF8.GetBytes(key), Encoding.UTF8.GetBytes(value), sequence);
+        StreamWrite(wle, entryFile);
+    }
+
+    public static void StreamWrite(WriteAheadlogEntry obj, string fileName)
+    {
+        using var fileStream = File.Create(fileName);
+        using var utf8JsonWriter = new Utf8JsonWriter(fileStream);
+        JsonSerializerOptions options = new JsonSerializerOptions();
+        JsonSerializer.Serialize(utf8JsonWriter, obj, options);
+    }
+
+    public PriorityQueue<WriteAheadlogEntry, ulong> Recover()
+    {
+        var priorityQueue = new PriorityQueue<WriteAheadlogEntry, ulong>();
+        foreach (var item in Directory.EnumerateFiles(_config.ConfigLocation))
+        {
+            using FileStream openStream = File.OpenRead(item);
+            var raw = JsonSerializer.Deserialize<WriteAheadlogEntry>(openStream);
+            //order by the sequence
+            if (raw != null)
+              priorityQueue.Enqueue(raw, raw.Index);
+        }
+
+        return priorityQueue;
     }
 }
 

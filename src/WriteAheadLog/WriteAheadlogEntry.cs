@@ -4,10 +4,10 @@
     {
         public byte[] Data { get; }
         public long Timestamp { get; }
-        public long Index { get; }
+        public ulong Index { get; }
         public byte[] Key { get; }
 
-        public WriteAheadlogEntry(byte[] key, byte[] data, long index)
+        public WriteAheadlogEntry(byte[] key, byte[] data, ulong index)
         {
             Key = key;
             Data = data;
