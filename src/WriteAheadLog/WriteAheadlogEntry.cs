@@ -15,4 +15,7 @@
             Timestamp = DateTime.UtcNow.Ticks;
         }
     }
+
+    public record LogConfig(string ConfigLocation, string Name);
+
 }

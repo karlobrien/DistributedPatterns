@@ -21,7 +21,6 @@ namespace WriteAheadLog
 
         public void Set(string key, string value)
         {
-            //could move the sequence generation to the key store
             _logger.Write(key, value, _sequence);
             _internalStore[key] = value;
         }
